@@ -106,3 +106,43 @@ class VARmodel(object):
             y[t+p+h] = (c + phi[:, 1:] @ x).T
         forecasts = y[p+h:]
         return forecasts
+
+
+if __name__ == '__main__':
+    # read data and Preprocessing
+    fredmd_all = pd.read_csv('../data/current.csv')
+    fredmd_Transform = fredmd_all.loc[[0], :].copy()
+    fredmd_Transform = fredmd_Transform.set_index('sasdate')
+    fredmd = fredmd_all.loc[1:].copy()
+    fredmd['sasdate'] = pd.to_datetime(fredmd['sasdate'])
+    fredmd = fredmd.set_index('sasdate')
+    fredmd = fredmd.iloc[:-1]  # 最後の行が空行なので削除
+    datanames = ['RPI', 'DPCERA3M086SBEA', 'IPDCONGD']
+    data, date = tcode_preprocess(fredmd[datanames], 5)
+    df3 = pd.DataFrame(data, index=date, columns=datanames)
+    print(df3)
+    # parameters
+    maxLag = 5  # max lag of VAR(p)
+    h = 0  # forecast lag
+    start = 611
+    end = 755
+    learning_data = data[start:end]
+    forecast_date = date[end:]
+    forecast_length = len(forecast_date)
+
+    model = VARmodel(learning_data)
+    print(model.IC_order(maxLag, h)['ic_results'])
+    forecast = model.forecast(p=1, h=h, forecast_length=forecast_length)
+    forecast_date = date[end:]
+    a = np.r_[learning_data, forecast]
+    fig, ax = plt.subplots(len(datanames), 1, figsize=(16, 9))
+    i = 0
+    fig.subplots_adjust(wspace=1, hspace=0.3)
+    for i in range(len(datanames)):
+        ax[i].plot(date[start:end], learning_data[:, i], label='data')
+        ax[i].plot(forecast_date, forecast[:, i], label='forecast')
+        ax[i].set_title(datanames[i])
+        ax[i].legend()
+    plt.show()
+
+    MSFE0 = np.sum((forecast - data[-forecast.shape[0]:])**2, axis=0)
