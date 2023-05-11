@@ -1,0 +1,2 @@
+# VAR_FREDMD
+FREADMDのデータを用いてVARモデルを推定するためのコード
