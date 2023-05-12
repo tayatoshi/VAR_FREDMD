@@ -121,8 +121,8 @@ if __name__ == '__main__':
     df3 = pd.DataFrame(data, index=date, columns=datanames)
     print(df3)
     # parameters
-    maxLag = ;  # max lag of VAR(p)
-    h = 0  # forecast lag
+    maxLag = 5  # max lag of VAR(p)
+    h = 0  # forecast h-step ahead
     start = 611
     end = 755
     learning_data = data[start:end]
