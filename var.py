@@ -4,7 +4,7 @@ import pandas as pd
 plt.style.use('seaborn')
 
 
-# tcode　preprocess
+# tcode preprocess
 def tcode_preprocess(df: pd.DataFrame, tcode: int) -> tuple[np.ndarray, pd.Index]:
     date = df.index
     data = np.array(df)
@@ -74,8 +74,7 @@ class VARmodel(object):
 
     def fit(self,
             p: int,
-            h: int,
-            ic: str = 'aic'
+            h: int
             ) -> pd.DataFrame:
         y_mat = self.data[p+h:]
         y_vec = y_mat.reshape(y_mat.shape[0]*y_mat.shape[1], 1, order='F')
