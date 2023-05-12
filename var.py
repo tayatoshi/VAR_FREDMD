@@ -122,32 +122,35 @@ if __name__ == '__main__':
     print(df3)
     # parameters
     maxLag = 5  # max lag of VAR(p)
-    h = 3  # max forecast h-step ahead
+    max_h = 3  # max forecast h-step ahead
     start = 611
     end = 755
     learning_data = data[start:end]
     forecast_date = date[end:]
     forecast_length = len(forecast_date)
 
+    ### Estimate
     model = VARmodel(learning_data)
     forecast_list = []
     forecast_date_list = []
     aic_lag_each_h = []
-    for h in range(h+1):
+    for h in range(max_h+1):
+        print(f'\n======== {h}-step ahead ========')
         select_order = model.IC_order(maxLag, h)
         print(select_order['ic_results'])
         aic = select_order['aic']
-        print(aic)
         aic_lag_each_h.append(aic)
         forecast = model.forecast(p=aic, h=h, forecast_length=forecast_length)
         forecast_date = date[end:]
         forecast_list.append(forecast)
         forecast_date_list.append(forecast_date)
+
+    ### Plot
     fig, ax = plt.subplots(len(datanames), 1, figsize=(16, 9))
     fig.subplots_adjust(wspace=1, hspace=0.3)
     for i in range(len(datanames)):
         ax[i].plot(date[start:end], learning_data[:, i], label='data')
-        for h in range(h+1):
+        for h in range(max_h+1):
             aic_p = aic_lag_each_h[h]
             ax[i].plot(forecast_date_list[h], forecast_list[h][:, i], label=f'forecast {h}-step ahead (lag = {aic_p})')
         ax[i].set_title(datanames[i])
