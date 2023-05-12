@@ -121,7 +121,7 @@ if __name__ == '__main__':
     df3 = pd.DataFrame(data, index=date, columns=datanames)
     print(df3)
     # parameters
-    maxLag = 5  # max lag of VAR(p)
+    maxLag = ;  # max lag of VAR(p)
     h = 0  # forecast lag
     start = 611
     end = 755
@@ -130,8 +130,11 @@ if __name__ == '__main__':
     forecast_length = len(forecast_date)
 
     model = VARmodel(learning_data)
-    print(model.IC_order(maxLag, h)['ic_results'])
-    forecast = model.forecast(p=1, h=h, forecast_length=forecast_length)
+    select_order = model.IC_order(maxLag, h)
+    print(select_order['ic_results'])
+    aic = select_order['aic']
+    print(aic)
+    forecast = model.forecast(p=aic, h=h, forecast_length=forecast_length)
     forecast_date = date[end:]
     a = np.r_[learning_data, forecast]
     fig, ax = plt.subplots(len(datanames), 1, figsize=(16, 9))
