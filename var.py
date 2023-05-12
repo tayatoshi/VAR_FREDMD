@@ -132,11 +132,13 @@ if __name__ == '__main__':
     model = VARmodel(learning_data)
     forecast_list = []
     forecast_date_list = []
+    aic_lag_each_h = []
     for h in range(h+1):
         select_order = model.IC_order(maxLag, h)
         print(select_order['ic_results'])
         aic = select_order['aic']
         print(aic)
+        aic_lag_each_h.append(aic)
         forecast = model.forecast(p=aic, h=h, forecast_length=forecast_length)
         forecast_date = date[end:]
         forecast_list.append(forecast)
@@ -146,7 +148,8 @@ if __name__ == '__main__':
     for i in range(len(datanames)):
         ax[i].plot(date[start:end], learning_data[:, i], label='data')
         for h in range(h+1):
-            ax[i].plot(forecast_date_list[h], forecast_list[h][:, i], label=f'forecast {h}-step ahead')
+            aic_p = aic_lag_each_h[h]
+            ax[i].plot(forecast_date_list[h], forecast_list[h][:, i], label=f'forecast {h}-step ahead (lag = {aic_p})')
         ax[i].set_title(datanames[i])
         ax[i].legend()
     plt.show()
